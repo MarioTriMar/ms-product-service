@@ -34,6 +34,18 @@ public class ProductController {
         }
         return productService.getProduct(id);
     }
+    @GetMapping()
+    public ResponseEntity getAllProducts() {
+        return productService.getAllProducts();
+    }
+
+    @GetMapping("/company/{id}")
+    public ResponseEntity getAllProductsOfCompany(@PathVariable String id) {
+        if(id==null || id.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return productService.getAllCompanyProducts(id);
+    }
 
     @PatchMapping("/{id}")
     public ResponseEntity partialUpdateProduct(@PathVariable String id, @RequestBody ProductDTO product) {

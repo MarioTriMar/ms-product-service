@@ -118,4 +118,14 @@ public class ProductService {
         }
         return listProductResponse;
     }
+
+    public ResponseEntity getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return new ResponseEntity(products, HttpStatus.OK);
+    }
+
+    public ResponseEntity getAllCompanyProducts(String id) {
+        List<Product> products = productRepository.findByCompany_Id(id);
+        return new ResponseEntity(products, HttpStatus.OK);
+    }
 }

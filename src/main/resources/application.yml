@@ -15,7 +15,7 @@ api:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8079/eureka
+      defaultZone: http://eureka-service:8079/eureka
   instance:
     preferIpAddress: true
     hostname: ms-product-service
