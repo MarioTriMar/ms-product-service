@@ -32,11 +32,15 @@ public class ProductController {
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return productService.getProduct(id);
+        Product product = productService.getProduct(id);
+        if(product==null){
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(product, HttpStatus.OK);
     }
     @GetMapping()
     public ResponseEntity getAllProducts() {
-        return productService.getAllProducts();
+        return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);
     }
 
     @GetMapping("/company/{id}")
@@ -44,7 +48,7 @@ public class ProductController {
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return productService.getAllCompanyProducts(id);
+        return new ResponseEntity<>(productService.getAllCompanyProducts(id),HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

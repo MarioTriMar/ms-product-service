@@ -1,34 +1,54 @@
 package com.tfm.ms_product_service.config;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
+import com.tfm.ms_product_service.model.Product;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 
 @Configuration
 @EnableCaching
 public class AppConfig {
 
+    @Value("${spring.redis.host}")
+    private String host;
+    @Value("${spring.redis.port}")
+    private Integer port;
+
     @Bean
     RestTemplate restTemplate(RestTemplateBuilder builder) {return builder.build();}
 
     @Bean
-    public Caffeine caffeineConfig() {
-        return Caffeine.newBuilder().expireAfterWrite(3, TimeUnit.MINUTES);
+    public LettuceConnectionFactory connectionFactory(){
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(host);
+        configuration.setPort(port);
+        return new LettuceConnectionFactory(configuration);
     }
-
     @Bean
-    public CacheManager cacheManager(Caffeine caffeine) {
-        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
-        caffeineCacheManager.setCacheNames(List.of("product", "products", "companyProducts"));
-        caffeineCacheManager.setCaffeine(caffeine);
-        return caffeineCacheManager;
+    public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
+        return RedisCacheManager.builder(redisConnectionFactory)
+                .withCacheConfiguration("product",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Product>(Product.class))))
+                .withCacheConfiguration("products",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class))))
+                .withCacheConfiguration("companyProducts",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class))))
+                .build();
     }
 }
