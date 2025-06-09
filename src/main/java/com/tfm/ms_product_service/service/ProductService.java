@@ -4,6 +4,10 @@ import com.tfm.ms_product_service.model.*;
 import com.tfm.ms_product_service.repository.ProductRepository;
 import com.tfm.ms_product_service.service.restTemplate.CompanyRestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,10 @@ public class ProductService {
     @Autowired
     private CompanyRestTemplate companyRestTemplate;
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "products", key = "'allProducts"),
+            @CacheEvict(cacheNames = "companyProducts", key = "#product.company")
+    })
     public ResponseEntity createProduct(ProductDTO product) {
         Company company;
         try{
@@ -48,6 +56,7 @@ public class ProductService {
         return productCannon;
     }
 
+    @Cacheable(cacheNames = "product", key="#id", condition = "#id!=null")
     public ResponseEntity getProduct(String id) {
         Optional<Product> optProduct = productRepository.findById(id);
         if (optProduct.isPresent()){
@@ -57,6 +66,11 @@ public class ProductService {
         }
     }
 
+    @CachePut(cacheNames = "product", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "companyProducts", key = "#product.company"),
+            @CacheEvict(cacheNames = "products", key = "'allProducts")
+    })
     public ResponseEntity partialUpdateProduct(String id, ProductDTO product) {
         ResponseEntity response = getProduct(id);
         if(response.getStatusCode() != HttpStatus.OK){
@@ -80,10 +94,15 @@ public class ProductService {
             Product productUpdated = productRepository.save(productCannon);
             return new ResponseEntity(productUpdated, HttpStatus.OK);
         }else{
-            return new ResponseEntity("Product didnt received an update", HttpStatus.OK);
+            return new ResponseEntity("Product didn't received an update", HttpStatus.OK);
         }
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "product", key = "#id"),
+            @CacheEvict(cacheNames = "products", key = "'allProducts"),
+            @CacheEvict(cacheNames = "companyProducts", allEntries = true)
+    })
     public ResponseEntity deleteProduct(String id) {
         ResponseEntity response = getProduct(id);
         if(response.getStatusCode() != HttpStatus.OK){
@@ -119,11 +138,13 @@ public class ProductService {
         return listProductResponse;
     }
 
+    @Cacheable(cacheNames = "products", key = "'allProducts")
     public ResponseEntity getAllProducts() {
         List<Product> products = productRepository.findAll();
         return new ResponseEntity(products, HttpStatus.OK);
     }
 
+    @Cacheable(cacheNames = "companyProducts", key="#id", condition = "#id!=null")
     public ResponseEntity getAllCompanyProducts(String id) {
         List<Product> products = productRepository.findByCompany_Id(id);
         return new ResponseEntity(products, HttpStatus.OK);
