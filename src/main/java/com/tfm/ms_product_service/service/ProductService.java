@@ -48,45 +48,44 @@ public class ProductService {
         return productCannon;
     }
 
-    public ResponseEntity getProduct(String id) {
+    public Product getProduct(String id) {
         Optional<Product> optProduct = productRepository.findById(id);
         if (optProduct.isPresent()){
-            return new ResponseEntity<>(optProduct.get(), HttpStatus.OK);
+            return optProduct.get();
         }else {
-            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+            return null;
         }
     }
 
     public ResponseEntity partialUpdateProduct(String id, ProductDTO product) {
-        ResponseEntity response = getProduct(id);
-        if(response.getStatusCode() != HttpStatus.OK){
+        Product productOrg = getProduct(id);
+        if(productOrg == null){
             return new ResponseEntity("Product not found", HttpStatus.NOT_FOUND);
         }
-        Product productCannon = (Product) response.getBody();
         boolean change = false;
         if(product.getPrice()>0.0){
-            productCannon.setPrice(product.getPrice());
+            productOrg.setPrice(product.getPrice());
             change = true;
         }
         if(product.getStock()>0){
-            productCannon.setStock(product.getStock());
+            productOrg.setStock(product.getStock());
             change = true;
         }
         if(product.getDescription()!=null){
-            productCannon.setDescription(product.getDescription());
+            productOrg.setDescription(product.getDescription());
             change = true;
         }
         if(change){
-            Product productUpdated = productRepository.save(productCannon);
+            Product productUpdated = productRepository.save(productOrg);
             return new ResponseEntity(productUpdated, HttpStatus.OK);
         }else{
-            return new ResponseEntity("Product didnt received an update", HttpStatus.OK);
+            return new ResponseEntity("Product didn't received an update", HttpStatus.OK);
         }
     }
 
     public ResponseEntity deleteProduct(String id) {
-        ResponseEntity response = getProduct(id);
-        if(response.getStatusCode() != HttpStatus.OK){
+        Product product = getProduct(id);
+        if(product==null){
             return new ResponseEntity("Product not found", HttpStatus.NOT_FOUND);
         }
         productRepository.deleteById(id);
@@ -99,8 +98,7 @@ public class ProductService {
         listProductResponse.setProductResponse(productResponses);
         for(OrderProductDTO orderProductDTO: orderProducts){
             ProductResponse productResponse = new ProductResponse();
-            Product product = new Product();
-            product = productRepository.findById(orderProductDTO.getProductId()).get();
+            Product product = productRepository.findById(orderProductDTO.getProductId()).get();
             productResponse.setId(product.getId());
             productResponse.setName(product.getName());
             productResponse.setCompanyName(product.getCompany().getName());
@@ -119,13 +117,16 @@ public class ProductService {
         return listProductResponse;
     }
 
-    public ResponseEntity getAllProducts() {
-        List<Product> products = productRepository.findAll();
-        return new ResponseEntity(products, HttpStatus.OK);
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
     }
 
-    public ResponseEntity getAllCompanyProducts(String id) {
-        List<Product> products = productRepository.findByCompany_Id(id);
-        return new ResponseEntity(products, HttpStatus.OK);
+    public List<Product> getAllCompanyProducts(String id) {
+        try{
+            Company company = companyRestTemplate.getCompany(id);
+        }catch (Exception e){
+            return null;
+        }
+        return productRepository.findByCompany_Id(id);
     }
 }
