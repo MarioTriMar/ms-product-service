@@ -48,7 +48,11 @@ public class ProductController {
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(productService.getAllCompanyProducts(id),HttpStatus.OK);
+        List<Product> products = productService.getAllCompanyProducts(id);
+        if (products==null){
+            return new ResponseEntity<>("Company doesn't exist", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(products,HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")

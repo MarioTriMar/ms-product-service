@@ -143,6 +143,11 @@ public class ProductService {
 
     @Cacheable(cacheNames = "companyProducts", key="#id", condition = "#id!=null")
     public List<Product> getAllCompanyProducts(String id) {
+        try{
+            Company company = companyRestTemplate.getCompany(id);
+        }catch (Exception e){
+            return null;
+        }
         return productRepository.findByCompany_Id(id);
     }
 }
