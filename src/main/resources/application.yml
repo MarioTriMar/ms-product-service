@@ -14,11 +14,3 @@ api:
   url:
     ms-company-service: http://ms-company-service
 
-##
-##eureka:
-##  client:
-##    service-url:
-##      defaultZone: http://eureka-service:8079/eureka
-##  instance:
-##    preferIpAddress: true
-##    hostname: ms-product-service
