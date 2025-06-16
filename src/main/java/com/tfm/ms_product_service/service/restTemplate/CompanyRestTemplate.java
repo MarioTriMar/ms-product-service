@@ -3,6 +3,7 @@ package com.tfm.ms_product_service.service.restTemplate;
 import com.tfm.ms_product_service.model.Company;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 @Component
 public class CompanyRestTemplate {
     @Autowired
+    @LoadBalanced
     private RestTemplate restTemplate;
 
     @Value("${api.url.ms-company-service}")

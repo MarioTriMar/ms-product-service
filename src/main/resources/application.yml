@@ -10,7 +10,7 @@ spring:
       database: product
 api:
   url:
-    ms-company-service: http://ms-company-service
+    ms-company-service: lb://ms-company-service
 
 eureka:
   client:
