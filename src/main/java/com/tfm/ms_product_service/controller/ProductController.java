@@ -9,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+    private Logger logger= LoggerFactory.getLogger(ProductController.class);
 
     @PostMapping()
     public ResponseEntity createProduct(@RequestBody ProductDTO product) {
@@ -29,6 +33,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public ResponseEntity getProduct(@PathVariable String id) {
+        logger.info("GetProduct by id: {}", id);
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -40,11 +45,13 @@ public class ProductController {
     }
     @GetMapping()
     public ResponseEntity getAllProducts() {
+        logger.info("Get all products");
         return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);
     }
 
     @GetMapping("/company/{id}")
     public ResponseEntity getAllProductsOfCompany(@PathVariable String id) {
+        logger.info("Get all products of company: {}", id);
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -57,11 +64,13 @@ public class ProductController {
 
     @PatchMapping("/{id}")
     public ResponseEntity partialUpdateProduct(@PathVariable String id, @RequestBody ProductDTO product) {
+        logger.info("Update product: {}", product.toString());
         return productService.partialUpdateProduct(id,product);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteProduct(@PathVariable String id) {
+        logger.info("Delete product by id: {}", id);
         if(id==null || id.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -70,6 +79,7 @@ public class ProductController {
 
     @PostMapping("/order")
     public ListProductResponse validateOrder(@RequestBody List<OrderProductDTO> orderProducts){
+        logger.info("Validating order: {}", orderProducts.toString());
         return productService.validateOrder(orderProducts);
     }
     private boolean isValid(ProductDTO product){

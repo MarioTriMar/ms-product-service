@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ public class ProductService {
     @Autowired
     private CompanyRestTemplate companyRestTemplate;
 
+    private Logger logger= LoggerFactory.getLogger(ProductService.class);
+
     public ResponseEntity createProduct(ProductDTO product) {
         Company company;
         try{
@@ -31,6 +35,7 @@ public class ProductService {
 
         Product productCannon = buildCannonProduct(product, company);
         productRepository.save(productCannon);
+        logger.info("Product saved");
         return new ResponseEntity("Product created", HttpStatus.CREATED);
 
     }
@@ -49,6 +54,7 @@ public class ProductService {
     }
 
     public Product getProduct(String id) {
+        logger.info("GetProduct by ID. SERVICE");
         Optional<Product> optProduct = productRepository.findById(id);
         if (optProduct.isPresent()){
             return optProduct.get();
@@ -108,8 +114,10 @@ public class ProductService {
                 product.setStock(product.getStock()-orderProductDTO.getQuantity());
                 productResponse.setStockAllow(true);
                 productRepository.save(product);
+                logger.info("Product {} has stock", product.getId());
             }else{
                 productResponse.setStockAllow(false);
+                logger.info("Product {} don't have enough stock", product.getId());
             }
 
             listProductResponse.getProductResponse().add(productResponse);

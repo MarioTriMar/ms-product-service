@@ -6,16 +6,16 @@ spring:
 
   data:
     mongodb:
-      uri: "${MONGO_URI:mongodb+srv://mario:mario@cluster0.t4gtdev.mongodb.net/}"
+      uri: "mongodb+srv://mario:mario@cluster0.t4gtdev.mongodb.net/"
       database: product
 api:
   url:
-    ms-company-service: lb://ms-company-service
+    ms-company-service: http://ms-company-service
 
 eureka:
   client:
     service-url:
-      defaultZone: http://eureka-service:8079/eureka
+      defaultZone: ${EUREKA_URL:http://localhost:8079/eureka}
   instance:
     preferIpAddress: true
     hostname: ms-product-service
