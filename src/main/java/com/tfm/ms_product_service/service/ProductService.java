@@ -4,6 +4,10 @@ import com.tfm.ms_product_service.model.*;
 import com.tfm.ms_product_service.repository.ProductRepository;
 import com.tfm.ms_product_service.service.restTemplate.CompanyRestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +29,10 @@ public class ProductService {
 
     private Logger logger= LoggerFactory.getLogger(ProductService.class);
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "products", key = "'allProducts'"),
+            @CacheEvict(cacheNames = "companyProducts", key = "#product.company")
+    })
     public ResponseEntity createProduct(ProductDTO product) {
         Company company;
         try{
@@ -53,6 +61,7 @@ public class ProductService {
         return productCannon;
     }
 
+    @Cacheable(cacheNames = "product", key="#id", condition = "#id!=null")
     public Product getProduct(String id) {
         logger.info("GetProduct by ID. SERVICE");
         Optional<Product> optProduct = productRepository.findById(id);
@@ -63,6 +72,11 @@ public class ProductService {
         }
     }
 
+    @CachePut(cacheNames = "product", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "companyProducts", key = "#product.company"),
+            @CacheEvict(cacheNames = "products", key = "'allProducts'")
+    })
     public ResponseEntity partialUpdateProduct(String id, ProductDTO product) {
         Product productOrg = getProduct(id);
         if(productOrg == null){
@@ -89,6 +103,11 @@ public class ProductService {
         }
     }
 
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "product", key = "#id"),
+            @CacheEvict(cacheNames = "products", key = "'allProducts'"),
+            @CacheEvict(cacheNames = "companyProducts", allEntries = true)
+    })
     public ResponseEntity deleteProduct(String id) {
         Product product = getProduct(id);
         if(product==null){
@@ -125,10 +144,12 @@ public class ProductService {
         return listProductResponse;
     }
 
+    @Cacheable(cacheNames = "products", key = "'allProducts'")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
+    @Cacheable(cacheNames = "companyProducts", key="#id", condition = "#id!=null")
     public List<Product> getAllCompanyProducts(String id) {
         try{
             Company company = companyRestTemplate.getCompany(id);
