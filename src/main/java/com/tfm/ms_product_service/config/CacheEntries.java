@@ -3,7 +3,6 @@ package com.tfm.ms_product_service.config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
-import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class CacheEntries {
+    /*
     @Autowired
     private CacheManager cacheManager;
 
@@ -29,4 +29,6 @@ public class CacheEntries {
             throw new IllegalStateException("Cache is not a Caffeine cache");
         }
     }
+
+     */
 }
