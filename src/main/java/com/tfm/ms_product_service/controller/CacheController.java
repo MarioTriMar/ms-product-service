@@ -12,10 +12,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("cache")
 public class CacheController {
+    /*
     @Autowired
     private CacheEntries cacheEntries;
+
     @GetMapping("/{cacheName}")
     public Map<Object, Object> getCompanyById(@PathVariable String cacheName){
         return this.cacheEntries.getAllEntriesInProductCache(cacheName);
     }
+
+     */
 }
