@@ -10,12 +10,5 @@ spring:
       database: product
 api:
   url:
-    ms-company-service: http://ms-company-service
+    ms-company-service: http://ms-company-service:8080
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URL:http://localhost:8079/eureka}
-  instance:
-    preferIpAddress: true
-    hostname: ms-product-service
