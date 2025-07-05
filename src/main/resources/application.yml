@@ -8,7 +8,7 @@ spring:
       uri: "mongodb+srv://mario:mario@cluster0.t4gtdev.mongodb.net/"
       database: product
   redis:
-    host: 0.0.0.0
+    host: redis-stack
     port: 6379
 api:
   url:
