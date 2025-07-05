@@ -63,7 +63,7 @@ public class ProductService {
 
     @Cacheable(cacheNames = "product", key="#id", condition = "#id!=null")
     public Product getProduct(String id) {
-        logger.info("GetProduct by ID. SERVICE");
+        logger.info("Product not in cache, searching in DB");
         Optional<Product> optProduct = productRepository.findById(id);
         if (optProduct.isPresent()){
             return optProduct.get();
@@ -146,11 +146,13 @@ public class ProductService {
 
     @Cacheable(cacheNames = "products", key = "'allProducts'")
     public List<Product> getAllProducts() {
+        logger.info("Products not in cache, searching in DB");
         return productRepository.findAll();
     }
 
     @Cacheable(cacheNames = "companyProducts", key="#id", condition = "#id!=null")
     public List<Product> getAllCompanyProducts(String id) {
+        logger.info("Company products not in cache, searching in DB");
         try{
             Company company = companyRestTemplate.getCompany(id);
         }catch (Exception e){
