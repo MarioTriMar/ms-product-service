@@ -37,13 +37,13 @@ public class CacheConfig {
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         return RedisCacheManager.builder(redisConnectionFactory)
                 .withCacheConfiguration("product",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(2))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Product>(Product.class))))
                 .withCacheConfiguration("products",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(2))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class))))
                 .withCacheConfiguration("companyProducts",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(3))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(2))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new Jackson2JsonRedisSerializer<Object>(Object.class))))
                 .build();
     }
