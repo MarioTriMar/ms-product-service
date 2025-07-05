@@ -12,7 +12,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("cache")
 public class CacheController {
-    /*
+
     @Autowired
     private CacheEntries cacheEntries;
 
@@ -21,5 +21,5 @@ public class CacheController {
         return this.cacheEntries.getAllEntriesInProductCache(cacheName);
     }
 
-     */
+
 }

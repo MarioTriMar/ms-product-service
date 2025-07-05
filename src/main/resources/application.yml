@@ -8,8 +8,8 @@ spring:
       uri: "mongodb+srv://mario:mario@cluster0.t4gtdev.mongodb.net/"
       database: product
   redis:
-    host: redis-stack
+    host: 0.0.0.0
     port: 6379
 api:
   url:
-    ms-company-service: http://ms-company-service:8080
+    ms-company-service: http://localhost:8080

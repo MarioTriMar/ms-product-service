@@ -1,5 +1,6 @@
 package com.tfm.ms_product_service.config;
 
+import com.github.benmanes.caffeine.cache.Cache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Component
 @Slf4j
 public class CacheEntries {
-    /*
+
     @Autowired
     private CacheManager cacheManager;
 
@@ -30,5 +31,5 @@ public class CacheEntries {
         }
     }
 
-     */
+
 }
